@@ -46,16 +46,12 @@ led_config_t g_led_config = {
 led_config_t g_led_config = {
     {
 
-         { 0,  1,  2,  3,  4 , 5,  NO_LED },
-         { NO_LED, 29, 30, 31, 32, 33, 34 },
-         { 6,  7,  8,  9,  10, 11, 12 },
-         { 35, 36, 37, 38, 39, 40, 41 },
-         { 13, 14, 15, 16, 17, 18, 19 },
-         { 42, 43, 44, 45, 46, 47, 48 },
-         { 20, 21, 22, 23, 24, 25, NO_LED },
-         { NO_LED, 49, 50,51, 52, 53, 54 },
-         { NO_LED, NO_LED, NO_LED, 26, 27,28,NO_LED },
-         { NO_LED, 55, 56, 57 , NO_LED,NO_LED, NO_LED },
+         // matrix rows 0-4 = left half, rows 5-9 = right half (paired visually L | R)
+         { 0,  1,  2,  3,  4,  5,  NO_LED },                 { NO_LED, 29, 30, 31, 32, 33, 34 },              // top
+         { 6,  7,  8,  9,  10, 11, 12 },                     { 35, 36, 37, 38, 39, 40, 41 },                  // r2
+         { 13, 14, 15, 16, 17, 18, 19 },                     { 42, 43, 44, 45, 46, 47, 48 },                  // r3
+         { 20, 21, 22, 23, 24, 25, NO_LED },                 { NO_LED, 49, 50, 51, 52, 53, 54 },              // r4
+         { NO_LED, NO_LED, NO_LED, 26, 27, 28, NO_LED },     { NO_LED, 55, 56, 57, NO_LED, NO_LED, NO_LED },  // thumb
    
     },
 
