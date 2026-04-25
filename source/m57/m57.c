@@ -97,21 +97,10 @@ led_config_t g_led_config = {
 #endif
 
 
-// Plum bootloader soft-entry: try standard tinyuf2-compatible magic at multiple
-// likely RAM addresses since LG Studio Plum's exact spec isn't documented.
-// If any address matches what the bootloader checks, it'll stay in DFU on reset.
+// PlumBL bootloader soft-entry: write magic 0xc220b134 to 0x2000fc00, reset.
+// Spec from upstream https://github.com/HaiMianBBao/PlumBL (STM32F401 variant).
 // Overrides the weak empty stub from platforms/chibios/bootloaders/custom.c.
 void bootloader_jump(void) {
-    static const uint32_t addresses[] = {
-        0x2000FFFCUL,  // end of 64K SRAM - 4 (standard adafruit tinyuf2)
-        0x2000FFF8UL,  // end - 8
-        0x2000FFF0UL,  // end - 16
-        0x20000000UL,  // start of SRAM
-        0x20000004UL,  // start + 4
-    };
-    const uint32_t magic = 0xF01669EFUL;
-    for (size_t i = 0; i < sizeof(addresses)/sizeof(addresses[0]); i++) {
-        *(volatile uint32_t *)addresses[i] = magic;
-    }
+    *(volatile uint32_t *)0x2000FC00UL = 0xC220B134UL;
     NVIC_SystemReset();
 }
