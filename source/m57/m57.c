@@ -54,10 +54,10 @@ led_config_t g_led_config = {
          { 13,     14,     15,     16,     17,     18,     19 },                    // matrix row 2: L home row + PgDn (LED 19 at (2,6))
          { 20,     21,     22,     23,     24,     25,     NO_LED },                // matrix row 3: L Z row, Mute no LED (no LED at (3,6))
          { NO_LED, NO_LED, NO_LED, 26,     27,     28,     NO_LED },                // matrix row 4: L thumbs - Del=26, MO(1)=27, Space=28
-         { NO_LED, 34,     33,     32,     31,     30,     29 },                    // matrix row 5: R top row (mirror)
-         { 41,     40,     39,     38,     37,     36,     35 },                    // matrix row 6: R Q row + "{[" (mirror, LED 41)
-         { 48,     47,     46,     45,     44,     43,     42 },                    // matrix row 7: R home row + MediaPlay (mirror, LED 48)
-         { NO_LED, 54,     53,     52,     51,     50,     49 },                    // matrix row 8: R Z row, "}]" no LED (mirror)
+         { NO_LED, 29,     30,     31,     32,     33,     34 },                    // matrix row 5: R top row (cols ascending)
+         { 35,     36,     37,     38,     39,     40,     41 },                    // matrix row 6: R Q row + "{[" (cols 0-6 ascending, all align matrix col)
+         { 42,     43,     44,     45,     46,     47,     48 },                    // matrix row 7: R home row + MediaPlay (cols 0-6 ascending)
+         { NO_LED, 49,     50,     51,     52,     53,     54 },                    // matrix row 8: R Z row, "}]" no LED (col 0 silent, cols 1-6 ascending)
          { NO_LED, 55,     56,     57,     NO_LED, NO_LED, NO_LED },                // matrix row 9: R thumbs - Enter=55, MO(3)=56, Bksp=57 (mirror)
    
     },
