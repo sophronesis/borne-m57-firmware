@@ -46,12 +46,19 @@ led_config_t g_led_config = {
 led_config_t g_led_config = {
     {
 
-         // matrix rows 0-4 = left half, rows 5-9 = right half (paired visually L | R)
-         { 0,  1,  2,  3,  4,  5,  NO_LED },                 { NO_LED, 29, 30, 31, 32, 33, 34 },              // top
-         { 6,  7,  8,  9,  10, 11, 12 },                     { 35, 36, 37, 38, 39, 40, 41 },                  // r2
-         { 13, 14, 15, 16, 17, 18, 19 },                     { 42, 43, 44, 45, 46, 47, 48 },                  // r3
-         { 20, 21, 22, 23, 24, 25, NO_LED },                 { NO_LED, 49, 50, 51, 52, 53, 54 },              // r4
-         { NO_LED, NO_LED, NO_LED, 26, 27, 28, NO_LED },     { NO_LED, 55, 56, 57, NO_LED, NO_LED, NO_LED },  // thumb
+         // matrix rows 0-4 = left half, rows 5-9 = right half (sequential, not paired)
+         // chain order (left): top(0-5) > Q row(6-11) > PgUp(12) > home row(13-18) > Mute(19) > Z row(20-25) > thumbs(26-28)
+         // PgDn (matrix 2,6) has no under-key LED. right half mirrored.
+         { 0,      1,      2,      3,      4,      5,      NO_LED },                // matrix row 0: L top row (Esc/1/2/3/4/5)
+         { 6,      7,      8,      9,      10,     11,     12 },                    // matrix row 1: L Q row + PgUp (LED 12 at (1,6))
+         { 13,     14,     15,     16,     17,     18,     19 },                    // matrix row 2: L home row + PgDn (LED 19 at (2,6))
+         { 20,     21,     22,     23,     24,     25,     NO_LED },                // matrix row 3: L Z row, Mute no LED (no LED at (3,6))
+         { NO_LED, NO_LED, NO_LED, 26,     27,     28,     NO_LED },                // matrix row 4: L thumbs - Del=26, MO(1)=27, Space=28
+         { NO_LED, 34,     33,     32,     31,     30,     29 },                    // matrix row 5: R top row (mirror)
+         { 41,     40,     39,     38,     37,     36,     35 },                    // matrix row 6: R Q row + "{[" (mirror, LED 41)
+         { 48,     47,     46,     45,     44,     43,     42 },                    // matrix row 7: R home row + MediaPlay (mirror, LED 48)
+         { NO_LED, 54,     53,     52,     51,     50,     49 },                    // matrix row 8: R Z row, "}]" no LED (mirror)
+         { NO_LED, 55,     56,     57,     NO_LED, NO_LED, NO_LED },                // matrix row 9: R thumbs - Enter=55, MO(3)=56, Bksp=57 (mirror)
    
     },
 
@@ -90,3 +97,21 @@ led_config_t g_led_config = {
 #endif
 
 
+// Plum bootloader soft-entry: try standard tinyuf2-compatible magic at multiple
+// likely RAM addresses since LG Studio Plum's exact spec isn't documented.
+// If any address matches what the bootloader checks, it'll stay in DFU on reset.
+// Overrides the weak empty stub from platforms/chibios/bootloaders/custom.c.
+void bootloader_jump(void) {
+    static const uint32_t addresses[] = {
+        0x2000FFFCUL,  // end of 64K SRAM - 4 (standard adafruit tinyuf2)
+        0x2000FFF8UL,  // end - 8
+        0x2000FFF0UL,  // end - 16
+        0x20000000UL,  // start of SRAM
+        0x20000004UL,  // start + 4
+    };
+    const uint32_t magic = 0xF01669EFUL;
+    for (size_t i = 0; i < sizeof(addresses)/sizeof(addresses[0]); i++) {
+        *(volatile uint32_t *)addresses[i] = magic;
+    }
+    NVIC_SystemReset();
+}
