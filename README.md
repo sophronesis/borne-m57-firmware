@@ -19,12 +19,16 @@ versus the vendor source ([source/borne_source_vendor.zip](source/borne_source_v
 
 ## first-time bootloader entry (tweezer method)
 
-before you can flash anything, you need to get into bootloader mode at least once. there's a **reset hole** on the back of each half's PCB (top-left corner near the MCU, two exposed pads):
+before you can flash anything, you need to get into bootloader mode at least once. there are two exposed reset pads on the back of each half's PCB - top-left corner near the USB-C port and MCU (red box):
+
+![reset pads location on left half PCB back](docs/reset-pads.png)
 
 1. unscrew the case, remove keycaps and switches around the top-left to expose the back of the PCB on the half you want to flash
 2. plug usb into that half only (disconnect inter-half cable for safety)
 3. with tweezers (or a paperclip bent flat), bridge both pads briefly, lift, then bridge again **within ~500ms** - mouse double-click rhythm
 4. the keyboard should re-enumerate as `Adafruit PlumBootloader` and a 32MB FAT volume labeled `STM32F4Plum` appears
+
+right half has the same pad layout (mirror position).
 
 once you flash a build with `bootloader_jump` working (any post-`6ab532f` build in this repo), **you never need the tweezers again** - just bind `QK_BOOT` to a key in vial and press it.
 
