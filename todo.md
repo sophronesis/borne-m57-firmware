@@ -67,3 +67,14 @@ with 10 dynamic layers configured, a single LED (or zone) showing active layer p
 ### nice-to-have: right half asymmetry doc
 
 right half led_config doesn't perfectly mirror left - PCB chain order differs slightly (e.g., LED 48 is at home row inner extra physically but in chain order it's between home and Z rows). worth a short comment in `m57.c` explaining the asymmetry for future readers.
+
+### bug: scroll lock indicator never lights on linux/wayland
+
+`scroll_lock` rule in `source/m57/keymaps/via/borne_status.toml` never fires because linux (gnome/wayland in this case) sees the KC_SCROLLLOCK keypress in `wev` but doesn't toggle the host scroll-lock state - so no LED set output report comes back to the keyboard, so `host_keyboard_led_state().scroll_lock` stays 0 forever. caps + num lock both work via the same path, so the firmware side is fine; this is purely an OS quirk.
+
+workaround paths, in order of robustness:
+1. **firmware-side toggle.** define a user keycode in `keymap.c` that flips a global `bool borne_user_indicator = !borne_user_indicator;` on press, bind it to LED 54 on layer 3 in vial. add a new gate (e.g., `gate = "user_flag_0"`) to the toml's scroll_lock rule and extend `GATE_C_EXPR` in `scripts/borne_status_gen.py` to recognize it. independent of OS behavior. ~10 lines plumbing total.
+2. **repurpose the slot.** scroll lock is dead weight on modern linux anyway - bind LED 54 to a layer-toggle / mute / macro and drop the rule.
+3. **switch the gate to compose / kana.** other HID lock bits that some compositors actually flip; `host_keyboard_led_state()` exposes them too.
+
+option 1 is the right call since it survives any future OS shenanigans; do it next time the toml is touched.

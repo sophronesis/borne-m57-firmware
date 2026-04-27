@@ -109,7 +109,7 @@ pulsating = true
 
 [[rule]]
 id        = "num_lock"
-priority  = 1
+priority  = 2
 layers    = "all"
 leds      = [41]              # KC_NUMLOCK    on layer 3, matrix (6,6)
 color     = "green"
@@ -118,7 +118,7 @@ gate      = "num_lock_on"
 
 [[rule]]
 id        = "caps_lock"
-priority  = 1
+priority  = 2
 layers    = "all"
 leds      = [48]              # KC_CAPSLOCK   on layer 3, matrix (7,6)
 color     = "green"
@@ -127,12 +127,27 @@ gate      = "caps_lock_on"
 
 [[rule]]
 id        = "scroll_lock"
-priority  = 1
+priority  = 2
 layers    = "all"
 leds      = [54]              # KC_SCROLLLOCK on layer 3, matrix (8,6)
 color     = "green"
 pulsating = true
 gate      = "scroll_lock_on"
+
+# layer 3: dim yellow on the three lock-key positions so the user can
+# locate them. the green priority-2 lock rules above override per-LED
+# when the corresponding host lock is on.
+[[rule]]
+id        = "l3_lock_positions"
+priority  = 1
+layers    = [3]
+leds      = [
+    41,                       # KC_NUMLOCK    matrix (6,6)
+    48,                       # KC_CAPSLOCK   matrix (7,6)
+    54,                       # KC_SCROLLLOCK matrix (8,6)
+]
+color     = "yellow"
+pulsating = true
 
 # priority 2 - per-layer overlays.
 
