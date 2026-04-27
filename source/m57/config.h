@@ -72,11 +72,11 @@
 #define MASTER_RIGHT
 
 #define SPLIT_HAND_PIN C1
-//#define SPLIT_LAYER_STATE_ENABLE
+#define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_HAND_PIN_LOW_IS_LEFT
 
 
-//#define SPLIT_LED_STATE_ENABLE
+#define SPLIT_LED_STATE_ENABLE
 //#define VIA_HAS_BROKEN_KEYCODES
 
 
@@ -89,6 +89,7 @@
 #    define WS2812_DMA_CHANNEL 5  // DMA Channel for TIMx_UP, see the respective reference manual for the appropriate values for your MCU.
 //#    define WS2812_DMAMUX_ID STM32_DMAMUX1_TIM2_UP // DMAMUX configuration for TIMx_UP -- only required if your MCU has a DMAMUX peripheral, see the respective reference manual for the appropriate values for your MCU.
 #define RGB_MATRIX_SLEEP
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_borne_status
 
 #define WEAR_LEVELING_LOGICAL_SIZE 4096
 #define WEAR_LEVELING_BACKING_SIZE (WEAR_LEVELING_LOGICAL_SIZE * 2)
