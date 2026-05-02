@@ -13,7 +13,7 @@ FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# arm cross-toolchain + python (qmk's prep scripts) + git for the clone.
+# arm cross-toolchain + python + qmk cli (Makefile calls `qmk` during build).
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         make \
@@ -23,12 +23,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3 \
         python3-pip \
         ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && pip3 install --no-cache-dir qmk
 
-# clone vial-qmk + init submodules. this layer is cached unless the RUN line changes.
+# clone vial-qmk + init submodules.
 RUN git clone --depth 1 https://github.com/vial-kb/vial-qmk /vial-qmk \
  && cd /vial-qmk \
- && make git-submodule
+ && git submodule update --init --recursive
+
+# tell qmk to use vial-qmk as its source tree.
+ENV QMK_HOME=/vial-qmk
+RUN qmk config user.qmk_home=/vial-qmk
 
 WORKDIR /vial-qmk
 

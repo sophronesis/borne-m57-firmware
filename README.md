@@ -54,7 +54,20 @@ sudo umount /mnt
 
 ## building from source
 
-the keyboard source ([source/m57/](source/m57/)) is a drop-in for vial-qmk, not a standalone project. setup:
+### docker (recommended)
+
+self-contained build, no qmk/toolchain on host. needs only docker (with BuildKit, default since Docker 23.0):
+
+```bash
+./scripts/build.sh
+# -> build/m57_via.uf2
+```
+
+first run takes ~5-10 min (apt + vial-qmk clone + submodule init + compile). subsequent runs cache everything except the final compile, ~30s. the [Dockerfile](Dockerfile) is multi-stage with a `scratch` export stage so `--output type=local` extracts just the .uf2 to `build/`.
+
+### manual (if you already have a qmk/vial-qmk tree)
+
+the keyboard source ([source/m57/](source/m57/)) is a drop-in for vial-qmk, not a standalone project:
 
 ```bash
 # clone vial-qmk (~1.4GB with submodules)
