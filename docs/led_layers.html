@@ -208,8 +208,8 @@
   <a href="#layer2">layer 2</a>
   <a href="#layer3">layer 3</a>
   <a href="#layer4">layer 4</a>
-  <a href="#layer5">layer 5 (gaming 1)</a>
-  <a href="#layer6">layer 6 (gaming 2)</a>
+  <a href="#layer5">layer 5</a>
+  <a href="#layer6">layer 6</a>
 </div>
 
 <div class="legend">
@@ -504,11 +504,6 @@ const layerDescs = {
   6: 'gaming mode 2 (gaming mode 1 + arrows). same as layer 5 but the right home row holds arrow keys (Left/Down/Right + Up on I).'
 };
 
-const layerNames = {
-  5: 'gaming mode 1 (no home row)',
-  6: 'gaming mode 2 (layer 5 + arrows)'
-};
-
 // ============================================================
 // rendering
 // ============================================================
@@ -587,7 +582,7 @@ function renderLayer(layerNum, keymap, leds) {
   panel.id = 'layer' + layerNum;
 
   const h = document.createElement('h2');
-  h.textContent = layerNames[layerNum] ? ('layer ' + layerNum + ': ' + layerNames[layerNum]) : ('layer ' + layerNum);
+  h.textContent = 'layer ' + layerNum;
   panel.appendChild(h);
 
   const desc = document.createElement('div');
