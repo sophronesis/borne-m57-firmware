@@ -208,8 +208,8 @@
   <a href="#layer2">layer 2</a>
   <a href="#layer3">layer 3</a>
   <a href="#layer4">layer 4</a>
-  <a href="#layer5">layer 5</a>
-  <a href="#layer6">layer 6</a>
+  <a href="#layer5">layer 5 (gaming 1)</a>
+  <a href="#layer6">layer 6 (gaming 2)</a>
 </div>
 
 <div class="legend">
@@ -283,8 +283,8 @@ b = alt   ? high : base;</pre>
   <tr><td>2</td><td>on</td><td>off (arrows overlay J/K/L)</td></tr>
   <tr><td>3</td><td>off (mouse arrows on left)</td><td>on</td></tr>
   <tr><td>4</td><td>off (numpad on left)</td><td>on</td></tr>
-  <tr><td>5</td><td>off</td><td>off (one-handed mode)</td></tr>
-  <tr><td>6</td><td>off</td><td>off (one-handed mode)</td></tr>
+  <tr><td>5</td><td>off</td><td>off (gaming mode 1)</td></tr>
+  <tr><td>6</td><td>off</td><td>off (gaming mode 2)</td></tr>
 </table>
 
 <p class="muted" style="font-size:13px;">
@@ -495,13 +495,18 @@ const layerLeds = {
 };
 
 const layerDescs = {
-  0: 'base layer. qwerty + home-row mod-taps. <code>MO(1)</code> on left thumb, <code>MO(3)</code> right thumb. tap <code>TO(5)</code> to enter one-handed mode.',
+  0: 'base layer. qwerty + home-row mod-taps. <code>MO(1)</code> on left thumb, <code>MO(3)</code> right thumb. tap <code>TO(5)</code> to enter gaming mode 1.',
   1: 'symbols / fkeys / boot. <code>BOOTLOADER</code> on Esc (red, solid). <code>F1-F6</code> on Z row, <code>F7-F12</code> on N row. minus/equal on right thumbs. <code>MO(4)</code> on far-right thumb -> numpad. <code>TO(6)</code> on Q-row first key.',
   2: 'arrows. activated by holding <code>Tab</code> (LT2). UP on I, LEFT/DOWN/RIGHT on J/K/L. arrow rule (priority 2) overrides J/K/L home-row blend; H and ; still show home-row blend on layer 0/1 only - on layer 2 home_row_right is off entirely so 43/47 stay white background.',
   3: 'mouse + media + rgb. mouse arrows on E/SDF (yellow), wheel on R/G/V/B (green), mouse buttons on left thumb cluster (blue). right side has rgb controls. lock-position hints show in yellow on PSc/Quote/BSlash - turn green when the host lock is on.',
   4: 'numpad. left half becomes a numpad (digits green, operators blue). right side has macro keys M0-M3 on the inner column. home-row right still active for modifiers.',
-  5: 'one-handed mode. all left letters available, modifiers moved to right thumb cluster (Ctrl=green, Shift=red, Alt=blue, Gui=white) + an extra Ctrl/Shift on left thumb. background still pulses; only the four thumb mods + TO5 indicator are colored.',
-  6: 'one-handed + arrows. like layer 5 but the right home row holds arrow keys (Left/Down/Right + Up on I).'
+  5: 'gaming mode 1 (no home row). plain letters on the left half - no mod-tap delay - and modifiers moved to right thumb cluster (Ctrl=green, Shift=red, Alt=blue, Gui=white) + an extra Ctrl/Shift on left thumb. background still pulses; only the four thumb mods + TO5 indicator are colored.',
+  6: 'gaming mode 2 (gaming mode 1 + arrows). same as layer 5 but the right home row holds arrow keys (Left/Down/Right + Up on I).'
+};
+
+const layerNames = {
+  5: 'gaming mode 1 (no home row)',
+  6: 'gaming mode 2 (layer 5 + arrows)'
 };
 
 // ============================================================
@@ -582,7 +587,7 @@ function renderLayer(layerNum, keymap, leds) {
   panel.id = 'layer' + layerNum;
 
   const h = document.createElement('h2');
-  h.textContent = 'layer ' + layerNum;
+  h.textContent = layerNames[layerNum] ? ('layer ' + layerNum + ': ' + layerNames[layerNum]) : ('layer ' + layerNum);
   panel.appendChild(h);
 
   const desc = document.createElement('div');
