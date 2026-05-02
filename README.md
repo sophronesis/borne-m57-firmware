@@ -87,6 +87,8 @@ vial keymap UID: `0x89, 0x36, 0x2A, 0xC7, 0xFA, 0xD8, 0x89, 0x45` (set in `sourc
 
 vial layout backups: [vil_backups/](vil_backups/).
 
+led pattern visualization (layers 0-6 + home-row mod-tap explainer): [docs/led_layers.html](docs/led_layers.html) - [rendered via htmlpreview](https://htmlpreview.github.io/?https://github.com/sophronesis/borne-m57-firmware/blob/led_layering/docs/led_layers.html).
+
 ## repo layout
 
 ```
