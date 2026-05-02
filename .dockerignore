@@ -1,0 +1,11 @@
+# keep the build context small - only source/ is needed for the docker build.
+.git/
+.github/
+build/
+firmware/
+vil_backups/
+docs/
+scripts/
+*.md
+*.html
+*.uf2
