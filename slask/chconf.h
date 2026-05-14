@@ -1,0 +1,3 @@
+#pragma once
+#define CH_CFG_ST_RESOLUTION 32
+#define CH_CFG_ST_FREQUENCY 1000

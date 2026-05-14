@@ -1,0 +1,157 @@
+#pragma once
+
+#include "quantum.h"
+
+/*
+============================================================
+CENTRAL RGB COLOR SYSTEM (M57 FIRMWARE)
+============================================================
+
+Single source of truth for ALL color definitions.
+
+Provides:
+
+✔ reusable color constants (COLOR_*)
+✔ theme profiles (rgb_theme_t)
+✔ utility function (apply_color)
+
+NOTE:
+Some color groups are not currently used in keymap.c but are
+intentionally retained for future features:
+
+- modifier highlighting
+- OS indicators
+- debug overlays
+*/
+
+
+typedef struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} rgb_t;
+
+
+// ============================================================
+// --- OS INDICATOR COLORS ---
+// ============================================================
+
+#define COLOR_OS_LINUX    ((rgb_t){  0,  80, 200}) // Cyan-blue: Linux branding, cool system identity
+#define COLOR_OS_WINDOWS  ((rgb_t){  0, 120, 255}) // Bright blue: Windows-style accent color
+#define COLOR_OS_MAC      ((rgb_t){180, 180, 180}) // Neutral gray: macOS metallic style
+#define COLOR_OS_ANDROID  ((rgb_t){  0, 150,   0}) // Green: Android ecosystem color
+
+
+// ============================================================
+// --- MODIFIER COLORS ---
+// ============================================================
+
+#define COLOR_MOD_SHIFT       ((rgb_t){255,   0,   0}) // Red: high urgency / active typing modifier
+#define COLOR_MOD_CTRL        ((rgb_t){255, 120,   0}) // Orange: control/combo operations
+#define COLOR_MOD_ALT         ((rgb_t){255, 200,   0}) // Yellow: alternate function indicator
+#define COLOR_MOD_GUI         ((rgb_t){200,   0, 200}) // Magenta: system-level command key
+
+#define COLOR_MOD_SHIFT_CTRL  ((rgb_t){255, 255,   0}) // Yellow: combined modifier emphasis
+#define COLOR_MOD_ALT_GUI     ((rgb_t){255,   0, 255}) // Bright magenta: dual modifier highlight
+
+
+// ============================================================
+// --- PERSIST STATE COLORS ---
+// ============================================================
+
+#define COLOR_PERSIST_ON   ((rgb_t){  0, 200,   0}) // Green: persistent layer or mode enabled
+#define COLOR_PERSIST_OFF  ((rgb_t){200,   0,   0}) // Red: persistent layer disabled
+
+
+// ============================================================
+// --- BASE / UTILITY COLORS ---
+// ============================================================
+
+#define COLOR_BASE        ((rgb_t){  0,   0,  60}) // Dim blue: default keyboard idle lighting
+#define COLOR_WHITE       ((rgb_t){255, 255, 255}) // White: neutral highlight / debug / flash
+#define COLOR_OFF         ((rgb_t){  0,   0,   0}) // Off: LED disabled
+
+
+// ============================================================
+// --- THEME COLOR DEFINITIONS ---
+// ============================================================
+
+/*
+============================================================
+THEME COLOR DEFINITIONS
+============================================================
+
+All theme colors must reference COLOR_* macros.
+No raw RGB values allowed.
+*/
+
+// --- UI THEME COLORS ---
+#define COLOR_BASE_UI        ((rgb_t){  0,  40, 120}) // Blue base: calm, structured interface
+#define COLOR_LAYER1_UI      ((rgb_t){  0,   0, 255}) // Pure blue: primary layer highlight
+#define COLOR_LAYER2_UI      ((rgb_t){255,   0, 255}) // Magenta: secondary layer or alternate function
+#define COLOR_REACTIVE_UI    ((rgb_t){255, 200,   0}) // Warm yellow: subtle interaction feedback
+
+// --- DEBUG THEME COLORS ---
+#define COLOR_BASE_DEBUG     ((rgb_t){120,   0,   0}) // Dark red: diagnostic mode base
+#define COLOR_LAYER1_DEBUG   ((rgb_t){255,   0,   0}) // Bright red: primary debug signals
+#define COLOR_LAYER2_DEBUG   ((rgb_t){255, 100, 100}) // Soft red: secondary debug state
+#define COLOR_REACTIVE_DEBUG ((rgb_t){255, 255, 255}) // White: maximum visibility for events
+
+// --- GAMING THEME COLORS ---
+#define COLOR_BASE_GAMING     ((rgb_t){  0, 120,   0}) // Green base: game-ready visual state
+#define COLOR_LAYER1_GAMING   ((rgb_t){  0, 255,   0}) // Bright green: active gameplay layer
+#define COLOR_LAYER2_GAMING   ((rgb_t){255, 255,   0}) // Yellow: secondary function emphasis
+#define COLOR_REACTIVE_GAMING ((rgb_t){255, 100,   0}) // Orange: dynamic input feedback
+
+
+// ============================================================
+// THEME SYSTEM (PROFILE-BASED RGB)
+// ============================================================
+
+typedef struct {
+    rgb_t base;
+    rgb_t layer1;
+    rgb_t layer2;
+    rgb_t reactive;
+} rgb_theme_t;
+
+
+// ============================================================
+// --- THEME DEFINITIONS ---
+// ============================================================
+
+static const rgb_theme_t theme_ui = {
+    .base     = COLOR_BASE_UI,
+    .layer1   = COLOR_LAYER1_UI,
+    .layer2   = COLOR_LAYER2_UI,
+    .reactive = COLOR_REACTIVE_UI,
+};
+
+static const rgb_theme_t theme_debug = {
+    .base     = COLOR_BASE_DEBUG,
+    .layer1   = COLOR_LAYER1_DEBUG,
+    .layer2   = COLOR_LAYER2_DEBUG,
+    .reactive = COLOR_REACTIVE_DEBUG,
+};
+
+static const rgb_theme_t theme_gaming = {
+    .base     = COLOR_BASE_GAMING,
+    .layer1   = COLOR_LAYER1_GAMING,
+    .layer2   = COLOR_LAYER2_GAMING,
+    .reactive = COLOR_REACTIVE_GAMING,
+};
+
+
+// ============================================================
+// APPLY COLOR UTILITY
+// ============================================================
+
+static inline void apply_color(uint8_t led_index, rgb_t color, uint8_t brightness) {
+
+    rgb_matrix_set_color(
+        led_index,
+        (uint8_t)(((uint16_t)color.r * brightness) >> 8),
+        (uint8_t)(((uint16_t)color.g * brightness) >> 8),
+        (uint8_t)(((uint16_t)color.b * brightness) >> 8)
+    );
+}

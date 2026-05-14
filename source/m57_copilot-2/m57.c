@@ -47,8 +47,9 @@ led_config_t g_led_config = {
     {
 
          // matrix rows 0-4 = left half, rows 5-9 = right half (sequential, not paired)
-         // chain order (left): top(0-5) > Q row(6-11) > PgUp(12) > home row(13-18) > Mute(19) > Z row(20-25) > thumbs(26-28)
-         // PgDn (matrix 2,6) has no under-key LED. right half mirrored.
+         // chain order (left): top(0-5) > Q row(6-11) > PgUp(12) > home row(13-18) > PgDn(19) > Z row(20-25) > thumbs(26-28)
+         // Mute (matrix 3,6) and MediaPlay (matrix has no under-key LED. right half mirrored.
+		 // Crucial info: 2 existing encoders with key press functionality and without RGB LEDs are located at L36 resp. R80 in LAYOUT
          { 0,      1,      2,      3,      4,      5,      NO_LED },   //    { NO_LED, 29,     30,     31,     32,     33,     34 },     // matrix row 0: L top row (Esc/1/2/3/4/5)
          { 6,      7,      8,      9,      10,     11,     12 },       //    { 35,     36,     37,     38,     39,     40,     41 },     // matrix row 1: L Q row + PgUp (LED 12 at (1,6))
          { 13,     14,     15,     16,     17,     18,     19 },       //    { 42,     43,     44,     45,     46,     47,     48 },     // matrix row 2: L home row + PgDn (LED 19 at (2,6))
@@ -56,9 +57,9 @@ led_config_t g_led_config = {
          { NO_LED, NO_LED, NO_LED, 26,     27,     28,     NO_LED },   //    { NO_LED, 55,     56,     57,     NO_LED, NO_LED, NO_LED }, // matrix row 4: L thumbs - Del=26, MO(1)=27, Space=28
 
          { NO_LED, 29,     30,     31,     32,     33,     34 },       //                                                                // matrix row 5: R top row (cols ascending)
-         { 35,     36,     37,     38,     39,     40,     41 },       //                                                                // matrix row 6: R Q row + "{[" (cols 0-6 ascending, all align matrix col)
-         { 42,     43,     44,     45,     46,     47,     48 },       //                                                                // matrix row 7: R home row + MediaPlay (cols 0-6 ascending)
-         { NO_LED, 49,     50,     51,     52,     53,     54 },       //                                                                // matrix row 8: R Z row, "}]" no LED (col 0 silent, cols 1-6 ascending)
+         { 35,     36,     37,     38,     39,     40,     41 },       //                                                                // matrix row 6: R Q row + "{[" (LED 35 at (6,0), cols 0-6 ascending, all align matrix col)
+         { 42,     43,     44,     45,     46,     47,     48 },       //                                                                // matrix row 7: R home row + "}]" (LED 42 at (7,0), cols 0-6 ascending)
+         { NO_LED, 49,     50,     51,     52,     53,     54 },       //                                                                // matrix row 8: R Z row, MediaPlay no LED (no LED at (8,0), col 0 silent, cols 1-6 ascending)
          { NO_LED, 55,     56,     57,     NO_LED, NO_LED, NO_LED },   //                                                                // matrix row 9: R thumbs - Enter=55, MO(3)=56, Bksp=57 (mirror)
    
     },

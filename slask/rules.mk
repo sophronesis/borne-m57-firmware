@@ -1,0 +1,52 @@
+# ==================================================
+# BORNE KEYBOARD - ROOT BUILD CONFIG
+# ==================================================
+
+# ---------------------------
+# MCU / BOARD
+# ---------------------------
+
+BOARD = GENERIC_STM32_F401XC
+KEYBOARD_SHARED_EP = yes
+
+# ---------------------------
+# BOOTLOADER / FIRMWARE
+# ---------------------------
+
+FIRMWARE_FORMAT = uf2
+UF2_FAMILY = 0xabcdf401
+MCU_LDSCRIPT = QF_STM32F401
+
+# ---------------------------
+# SERIAL (SPLIT COMMUNICATION)
+# ---------------------------
+
+SERIAL_DRIVER = usart
+UARTENABLE = yes
+
+# ---------------------------
+# OPTIMIZATIONS
+# ---------------------------
+
+OPT_DEFS += -DCORTEX_ENABLE_WFI_IDLE=TRUE
+OPT_DEFS += -DQMK_MCU_STM32F401
+OPT_DEFS += -DBOOTLOADER_TINYUF2
+
+LTO_ENABLE = yes   # Reduce firmware size (recommended)
+
+# ---------------------------
+# EEPROM
+# ---------------------------
+
+EEPROM_DRIVER = wear_leveling
+WEAR_LEVELING_DRIVER = legacy
+
+# ---------------------------
+# OPTIONAL DEBUG (DEV ONLY)
+# ---------------------------
+
+CONSOLE_ENABLE = yes
+
+# ==================================================
+# END
+# ==================================================

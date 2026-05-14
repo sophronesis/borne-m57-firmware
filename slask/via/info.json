@@ -1,0 +1,14 @@
+{
+    "keyboard_name": "M57",
+    "manufacturer": "Custom",
+    "maintainer": "You",
+    "matrix": {
+        "rows": 2,
+        "cols": 5
+    },
+    "lighting": {
+        "rgb_matrix": true
+    },
+    "vendorId": "0xFEED",
+    "productId": "0x0001"
+}

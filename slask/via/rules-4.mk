@@ -1,0 +1,16 @@
+VIAL_ENABLE = yes
+VIALRGB_ENABLE = yes
+VIA_ENABLE = yes
+
+# DEV mode (disable later!)
+VIAL_INSECURE = yes
+
+ENCODER_ENABLE = yes
+ENCODER_MAP_ENABLE = yes
+
+RGB_MATRIX_ENABLE = yes
+
+EEPROM_DRIVER = wear_leveling
+
+LTO_ENABLE = yes
+EXTRAKEY_ENABLE = yes

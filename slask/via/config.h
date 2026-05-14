@@ -1,0 +1,2 @@
+#pragma once
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 180
