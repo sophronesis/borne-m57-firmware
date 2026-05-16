@@ -118,7 +118,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    //,-------------------------------------------------------------.     ,-------------------------------------------------------------.
      KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,  KC_UP,     KC_LEFT, KC_Y,    KC_U,   KC_I,    KC_O,   KC_P,    KC_LBRC,
    //|--------+--------+--------+--------+--------+-------+------| |---------+--------+-------+--------+-------+---------+---------|
-     KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,  KC_DOWN,   KC_RGHT, KC_H,    KC_J,   KC_K,    KC_L,   KC_SCLN, KC_ENTER,
+     KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,  KC_DOWN,   KC_RGHT, KC_H,    KC_J,   KC_K,    KC_L,   KC_SCLN, KC_NO,
    //|--------+--------+--------+--------+--------+-------+------| |---------+--------+-------+--------+-------+---------+---------|
      KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,  KC_MUTE,   RGB_MOD, KC_N,    KC_M,   KC_COMM, KC_DOT, KC_SLSH, KC_DEL,
    //|--------+--------+--------+--------+--------+-------+---.   .---+-------+--------+-------+--------+-------+---------+---------|
@@ -134,7 +134,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    //,-------------------------------------------------------------.     ,-------------------------------------------------------------.
      KC_GRV,  KC_F1,      KC_F2,      KC_F3,         KC_F4,   KC_F5,               KC_F6,   KC_F7,         KC_F8,         KC_F9,         KC_F10,        KC_DEL,
    //,-------------------------------------------------------------.     ,-------------------------------------------------------------.
-     _______, _______,    _______,    _______,       KC_PGUP, KC_HOME, KC_PGUP, KC_PGDN, KC_F11,        KC_F12,        KC_PSCR,       KC_SCRL,       KC_NUM,  KC_RBRC,
+     _______, _______,    _______,    _______,       KC_PGUP, KC_HOME, KC_PGUP, KC_PGDN, KC_F11,        KC_F12,        _______,       _______,       _______, KC_RBRC,
+   // Freed slots (row1 right: O, P, [):  KC_PSCR (screenshot), KC_PSCR+mod (region snip),
+   //   KC_SCRL (ScrollLk — rarely needed; good for app-specific binds),
+   //   KC_NUM (NumLk — useful if numpad layer active), QK_LOCK (caps-word),
+   //   LSG(KC_S) (Win snip), LGUI(KC_PSCR) (Win fullscreen snip)
    //|--------+-----------+-----------+---------------+---------+--------+-----| |--------+--------------+--------------+--------------+--------------+--------+---------|
      _______, THEME_PREV, _______,    THEME_NEXT,    KC_PGDN, KC_END,  KC_PGDN, KC_END,  KC_LEFT,       KC_DOWN,       KC_UP,         KC_RGHT,       KC_QUOT, _______,
    //|--------+-----------+-----------+---------------+---------+--------+-----| |--------+--------------+--------------+--------------+--------------+--------+---------|
@@ -143,20 +147,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                        _______, MO(LAYER_FN),  _______,         _______,  MO(LAYER_NAV),  _______
   ),
 
-  // ── LAYER 2: NAV / NUMPAD ──────────────────────────────────────────────────
-  // Right side: numpad 7-9 / 4-6 / 1-3 / 0 layout.  Left: PgUp/Dn, Home/End.
-  // Right thumb Enter → numpad Enter.
+  // ── LAYER 2: NAV / MOUSE ───────────────────────────────────────────────────
+  // Right HJKL:  H=←  J=↓  K=↑  L=→  (VIM-style mouse movement)
+  // Right Y/U/I: left / right / middle click
+  // Left A/S/D:  speed — A=fast (ACCEL2)  S=medium (ACCEL1)  D=sniper (ACCEL0)
+  //              Hold left-hand speed key + right-hand HJKL = two-hand precision control
+  // Middle col:  WH_UP (row1) / WH_DOWN (row2) — scroll wheel, reachable from either hand
+  // Left R/T F/G: PgUp/Home  PgDn/End — text navigation unchanged
+  // Right thumb Enter → pass-through (base Enter); no numpad Enter needed
   [LAYER_NAV] = LAYOUT(
    //,-------------------------------------------------------------.     ,-------------------------------------------------------------.
      _______, _______, _______, _______, _______, _______,               _______, _______, _______, _______, _______, _______,
    //,-------------------------------------------------------------.     ,-------------------------------------------------------------.
-     _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_PGUP,  KC_HOME, KC_P7,   KC_P8,   KC_P9,   KC_PMNS, _______, _______,
-   //|--------+--------+--------+--------+--------+--------+------| |--------+--------+--------+--------+--------+--------+---------|
-     _______, _______, _______, _______, KC_PGDN, KC_END,  KC_PGDN,  KC_END,  KC_P4,   KC_P5,   KC_P6,   KC_PPLS, _______, _______,
-   //|--------+--------+--------+--------+--------+--------+------| |--------+--------+--------+--------+--------+--------+---------|
-     _______, _______, _______, _______, _______, _______, _______,  _______, KC_P1,   KC_P2,   KC_P3,   KC_P0,   KC_PDOT, _______,
-   //|--------+--------+--------+--------+--------+--------+---.   .---+------+--------+--------+--------+--------+--------+---------|
-                                _______, MO(LAYER_FN), _______,         KC_PENT, MO(LAYER_NAV), _______
+     _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_MS_WH_UP,  KC_MS_WH_DOWN, KC_MS_BTN1, KC_MS_BTN2, KC_MS_BTN3, _______, _______, _______,
+   //|--------+--------+--------+--------+--------+--------+------| |--------+----------+----------+----------+--------+--------+---------|
+     _______, KC_MS_ACCEL2, KC_MS_ACCEL1, KC_MS_ACCEL0, KC_PGDN, KC_END, KC_MS_WH_DOWN, KC_MS_WH_UP, KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RGHT, _______, _______,
+   //|--------+--------+--------+--------+--------+--------+------| |--------+----------+----------+----------+--------+--------+---------|
+     _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______, _______, _______, _______, _______,
+   //|--------+--------+--------+--------+--------+--------+---.   .---+------+----------+----------+----------+--------+--------+---------|
+                                _______, MO(LAYER_FN), _______,         _______, MO(LAYER_NAV), _______
   ),
 
   // ── LAYER 3: GAME ──────────────────────────────────────────────────────────
@@ -204,8 +213,8 @@ combo_t key_combos[COMBO_COUNT] = {
 
 
 // ============================================================
-// LED OWNERSHIP  (OS indicator zone — never overwritten by other layers)
-// ============================================================
+
+
 
 static const uint8_t os_indicator_zone[] = {0, 1, 2, 3};
 #define OS_INDICATOR_LED_COUNT (sizeof(os_indicator_zone) / sizeof(os_indicator_zone[0]))
