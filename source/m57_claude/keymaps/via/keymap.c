@@ -4,7 +4,9 @@
 
 /* ============================================================
  * DEBUG LOGGING
- * Build with: make m57:via OPT_DEFS+="-DDEBUG_LEVEL=3"
+ * Toggle on/off: FN+D (LOG_TOGG) — persisted to EEPROM.
+ * Cycle level:   Shift+FN+D — cycles ERROR→WARN→INFO→VERBOSE, persisted.
+ * Read output:   qmk console  (requires CONSOLE_ENABLE = yes)
  * ============================================================ */
 #define DEBUG_NONE    0
 #define DEBUG_ERROR   1
@@ -12,12 +14,11 @@
 #define DEBUG_INFO    3
 #define DEBUG_VERBOSE 4
 
-#ifndef DEBUG_LEVEL
-#  define DEBUG_LEVEL DEBUG_NONE
-#endif
-
+/* LOG() uses user_config.debug_enabled and user_config.debug_level (both from EEPROM).
+ * user_config is not yet initialized here at macro definition time — that is fine;
+ * LOG() is only called from functions, never at static init. */
 #define LOG(level, fmt, ...) do { \
-    if (DEBUG_LEVEL >= (level)) uprintf(fmt "\n", ##__VA_ARGS__); \
+    if (user_config.debug_enabled && user_config.debug_level >= (level)) uprintf(fmt "\n", ##__VA_ARGS__); \
 } while (0)
 
 /* ============================================================
@@ -58,30 +59,39 @@ typedef enum {
 typedef union {
     uint32_t raw;
     struct {
-        uint8_t os_type : 8;
-        uint8_t theme   : 8;
+        uint8_t os_type       : 8;
+        uint8_t theme         : 8;
+        uint8_t debug_enabled : 1;  /* 0=off, 1=on; persisted */
+        uint8_t debug_level   : 3;  /* 0-4 maps to DEBUG_* levels; persisted */
     };
 } user_config_t;
 
 static user_config_t user_config;
 
 void eeconfig_init_user(void) {
-    user_config.raw     = 0;
-    user_config.os_type = OS_WINDOWS;
-    user_config.theme   = UI_MODE_DEFAULT;
+    user_config.raw           = 0;
+    user_config.os_type       = OS_WINDOWS;
+    user_config.theme         = UI_MODE_DEFAULT;
+    user_config.debug_enabled = 0;
+    user_config.debug_level   = DEBUG_INFO;
     eeconfig_update_user(user_config.raw);
 }
 
 static void save_config(void) {
     eeconfig_update_user(user_config.raw);
-    LOG(DEBUG_INFO, "config saved: os=%u theme=%u", user_config.os_type, user_config.theme);
+    LOG(DEBUG_INFO, "config saved: os=%u theme=%u dbg=%u lvl=%u",
+        user_config.os_type, user_config.theme,
+        user_config.debug_enabled, user_config.debug_level);
 }
 
 static void load_config(void) {
     user_config.raw = eeconfig_read_user();
-    if (user_config.os_type >= OS_COUNT)      user_config.os_type = OS_WINDOWS;
-    if (user_config.theme   >= UI_MODE_COUNT) user_config.theme   = UI_MODE_DEFAULT;
-    LOG(DEBUG_INFO, "config loaded: os=%u theme=%u", user_config.os_type, user_config.theme);
+    if (user_config.os_type     >= OS_COUNT)      user_config.os_type     = OS_WINDOWS;
+    if (user_config.theme       >= UI_MODE_COUNT) user_config.theme       = UI_MODE_DEFAULT;
+    if (user_config.debug_level >  DEBUG_VERBOSE) user_config.debug_level = DEBUG_INFO;
+    LOG(DEBUG_INFO, "config loaded: os=%u theme=%u dbg=%u lvl=%u",
+        user_config.os_type, user_config.theme,
+        user_config.debug_enabled, user_config.debug_level);
 }
 
 /* ============================================================
@@ -95,6 +105,8 @@ enum custom_keycodes {
     OS_SET_ANDROID,
     THEME_NEXT,
     THEME_PREV,
+    LOG_TOGG,      /* FN+D: toggle debug logging on/off (persisted) */
+    LOG_LEVEL_UP,  /* Shift+FN+D: cycle log level up ERROR→WARN→INFO→VERBOSE (persisted) */
 };
 
 /* ============================================================
@@ -142,7 +154,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, KC_PGUP, KC_HOME, KC_PGUP, KC_PGDN, KC_F11, KC_F12, _______, _______, _______, KC_RBRC,
     //                                                            ^--- 3 slots free: future KC_PSCR, QK_LOCK, LSG(KC_S)
     //,----+------+------+------+------+------+------.  ,------+------+------+------+------+------+-------.
-      _______, THEME_PREV, _______, THEME_NEXT, KC_PGDN, KC_END, KC_PGDN, KC_END, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_QUOT, _______,
+      _______, THEME_PREV, THEME_NEXT, LOG_TOGG, KC_PGDN, KC_END, KC_PGDN, KC_END, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_QUOT, _______,
     //,----+------+------+------+------+------+------.  ,------+------+------+------+------+------+-------.
       _______, _______, _______, _______, TG(LAYER_GAME), QK_BOOT, KC_VOLD, KC_VOLU, OS_SET_WINDOWS, OS_SET_MAC, OS_SET_ANDROID, OS_SET_LINUX, KC_BSLS, _______,
     //`----+------+------+------+------+------+------.  ,------+------+------+------+------+------+------'
@@ -204,16 +216,18 @@ combo_t key_combos[COMBO_COUNT];
  * KEY OVERRIDES -- Swedish AltGr characters + Shift morphs
  * KC_QUOT must remain on BASE R76 as the ae trigger key.
  * ============================================================ */
-static const key_override_t ao_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_LBRC, UC(0x00E5)); /* a-ring */
-static const key_override_t oo_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_SCLN, UC(0x00F6)); /* o-umlaut */
-static const key_override_t ae_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_QUOT, UC(0x00E4)); /* a-umlaut */
-static const key_override_t bspc_override = ko_make_basic(MOD_MASK_SHIFT,       KC_BSPC, KC_DEL);     /* Shift+Backspace → Delete */
+static const key_override_t ao_override      = ko_make_basic(MOD_BIT(KC_RALT),  KC_LBRC,  UC(0x00E5));  /* a-ring */
+static const key_override_t oo_override      = ko_make_basic(MOD_BIT(KC_RALT),  KC_SCLN,  UC(0x00F6));  /* o-umlaut */
+static const key_override_t ae_override      = ko_make_basic(MOD_BIT(KC_RALT),  KC_QUOT,  UC(0x00E4));  /* a-umlaut */
+static const key_override_t bspc_override    = ko_make_basic(MOD_MASK_SHIFT,    KC_BSPC,  KC_DEL);      /* Shift+Backspace → Delete */
+static const key_override_t loglvl_override  = ko_make_basic(MOD_MASK_SHIFT,    LOG_TOGG, LOG_LEVEL_UP);/* Shift+FN+D → cycle log level */
 
 const key_override_t *key_overrides[] = {
     &ao_override,
     &oo_override,
     &ae_override,
     &bspc_override,
+    &loglvl_override,
     NULL,
 };
 
@@ -652,6 +666,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             user_config.theme = (user_config.theme + UI_MODE_COUNT - 1) % UI_MODE_COUNT;
             save_config();
             return false;
+        case LOG_TOGG:
+            user_config.debug_enabled = !user_config.debug_enabled;
+            save_config();
+            uprintf("debug logging %s (level=%u)\n",
+                    user_config.debug_enabled ? "ON" : "OFF",
+                    user_config.debug_level);
+            return false;
+        case LOG_LEVEL_UP: {
+            static const char *level_names[] = {"NONE","ERROR","WARN","INFO","VERBOSE"};
+            user_config.debug_level = (user_config.debug_level + 1) % (DEBUG_VERBOSE + 1);
+            save_config();
+            uprintf("debug level: %s\n", level_names[user_config.debug_level]);
+            return false;
+        }
         default: break;
     }
 

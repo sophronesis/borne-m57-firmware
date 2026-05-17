@@ -13,4 +13,4 @@ MOUSEKEY_ENABLE        = yes   # Mouse movement/click/scroll keycodes for NAV la
 REPEAT_KEY_ENABLE      = yes   # QK_REPEAT_KEY / QK_ALT_REPEAT_KEY
 DYNAMIC_TAPPING_TERM_ENABLE = yes  # Live tapping term adjustment via DT_UP / DT_DOWN
 VIAL_INSECURE          = yes   # Vial unlock without physical key combo
-# CONSOLE_ENABLE       = yes   # Uncomment for debug builds only (~2 KB flash cost)
+CONSOLE_ENABLE         = yes   # Required for uprintf/LOG_TOGG runtime debug output (~2 KB flash)
