@@ -10,16 +10,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **always read the handoff doc before touching the claude keymap:** if a handoff doc exists for the project, read it first. Don't copy files or patch code without consulting it.
 
-**implementation workflow — follow this order every time:**
+**workflow A — fresh implementation (from scratch):**
+Use when starting a new project or fully rewriting an existing one.
 1. analyze current state
 2. write or update handoff doc (new version)
 3. implement from scratch based on handoff doc
 4. run sanity check
 5. run code quality assessment
 6. run comment audit and apply improvements
-7. commit all changes with a descriptive message (see git rule below)
+7. commit all changes (see git rule below)
 
-Steps 4–6 are defaults, not optional — run them without being asked.
+**workflow B — ongoing work (fixes and new features):**
+Use when adding to or modifying an existing implementation.
+1. analyze affected code and understand current state
+2. implement the fix or feature
+3. run sanity check
+4. run code quality assessment
+5. commit all changes (see git rule below)
+
+Steps 3–4 in workflow B and steps 4–6 in workflow A are defaults — run them without being asked.
 
 **git: commit when implementation is complete:** after all workflow steps are done, stage all changed files. Before committing, compose a descriptive commit message, show it to the user, and ask for approval. Wait for the user to accept or provide edits before running `git commit`. Always include the Co-authored-by trailer:
 ```
