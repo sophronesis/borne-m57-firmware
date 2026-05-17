@@ -200,17 +200,19 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 combo_t key_combos[COMBO_COUNT];
 
 /* ============================================================
- * KEY OVERRIDES -- Swedish AltGr characters
+ * KEY OVERRIDES -- Swedish AltGr characters + Shift morphs
  * KC_QUOT must remain on BASE R76 as the ae trigger key.
  * ============================================================ */
-static const key_override_t ao_override = ko_make_basic(MOD_BIT(KC_RALT), KC_LBRC, UC(0x00E5)); /* a-ring */
-static const key_override_t oo_override = ko_make_basic(MOD_BIT(KC_RALT), KC_SCLN, UC(0x00F6)); /* o-umlaut */
-static const key_override_t ae_override = ko_make_basic(MOD_BIT(KC_RALT), KC_QUOT, UC(0x00E4)); /* a-umlaut */
+static const key_override_t ao_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_LBRC, UC(0x00E5)); /* a-ring */
+static const key_override_t oo_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_SCLN, UC(0x00F6)); /* o-umlaut */
+static const key_override_t ae_override   = ko_make_basic(MOD_BIT(KC_RALT),     KC_QUOT, UC(0x00E4)); /* a-umlaut */
+static const key_override_t bspc_override = ko_make_basic(MOD_MASK_SHIFT,       KC_BSPC, KC_DEL);     /* Shift+Backspace → Delete */
 
 const key_override_t *key_overrides[] = {
     &ao_override,
     &oo_override,
     &ae_override,
+    &bspc_override,
     NULL,
 };
 
