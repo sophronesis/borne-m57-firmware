@@ -4,7 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## working conventions
 
-**context switching:** when the user says `cd X`, treat it as a project context switch — that folder becomes the working root for the rest of the conversation. Resolve typos in project/folder names quietly (e.g. `m57_cloude` → `m57_claude`) without asking for confirmation.
+**communities to check when researching features:**
+- `r/olkb` (Reddit) — main QMK/vial community
+- `r/ErgoMechKeyboards` (Reddit) — ergo/split keyboard enthusiasts
+- QMK Discord — official, very active
+- ZMK Discord — ZMK-specific
+- 40% keyboards Discord — corne/split users
+- QMK GitHub issues/discussions — authoritative
+
+ when the user says `cd X`, treat it as a project context switch — that folder becomes the working root for the rest of the conversation. Resolve typos in project/folder names quietly (e.g. `m57_cloude` → `m57_claude`) without asking for confirmation.
 
 **handoff documents are versioned, never overwritten:** each revision gets a new version suffix (`_v1`, `_v2`, …). When updating a handoff doc, create a new file — don't edit the previous version in place.
 
