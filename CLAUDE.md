@@ -45,7 +45,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 
 ## script logging
 
-Before executing any inline PowerShell (`.ps1`) or Python (`.py`) script, save it as a named file in `C:\Users\KSCHULZ1\Code\borne-m57-firmware\cloude-files\`, then run it from there. Use a descriptive filename (e.g., `sanity_check.ps1`, `verify_json.py`). This applies to all scripts in any m57-related project.
+Before executing any inline PowerShell (`.ps1`) or Python (`.py`) script, save it as a named file in `C:\Users\KSCHULZ1\Code\borne-m57-firmware\claude-files\`, then run it from there. Include a short datetime stamp in the filename using the format `YYYYMMDD_HHMM` (e.g., `sanity_check_20260517_1205.ps1`, `verify_json_20260517_1205.py`). This applies to all scripts in any m57-related project.
 
 ## what this is
 
