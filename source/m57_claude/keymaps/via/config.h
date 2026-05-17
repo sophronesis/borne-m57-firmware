@@ -17,6 +17,7 @@
 /* Tap/hold timing */
 #define TAPPING_TERM    200
 #define ONE_SHOT_TIMEOUT 1000
+#define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD  /* double-tap KC_LSFT activates Caps Word */
 
 /* Mouse key speed (ACCEL0=sniper, ACCEL1=medium, ACCEL2=fast) */
 #define MOUSEKEY_MOVE_DELTA  8    /* pixels per step at minimum speed */
