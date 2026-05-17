@@ -47,9 +47,10 @@ static inline void apply_color(uint8_t led, rgb_t c, uint8_t brightness) {
 #define COLOR_MOD_ALT_GUI    RGB_COLOR(255,   0, 255)  /* blend shown on both when Alt+GUI held */
 
 /* ============================================================
- * Lock indicator colors  (Caps: LED_IDX_CAPS=13; Num/Scroll: host_keyboard_led_state)
+ * Lock indicator colors  (Caps/CapsWord: LED_IDX_CAPS=13; Num/Scroll: host_keyboard_led_state)
  * ============================================================ */
 #define COLOR_LOCK_CAPS  RGB_COLOR(255,   0,   0)
+#define COLOR_CAPS_WORD  RGB_COLOR(255, 165,   0)  /* orange — distinct from solid Caps Lock red */
 #define COLOR_LOCK_NUM   RGB_COLOR(  0, 200, 100)
 #define COLOR_LOCK_SCRL  RGB_COLOR(200, 100,   0)
 

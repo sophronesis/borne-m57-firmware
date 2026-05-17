@@ -1,3 +1,4 @@
+CAPS_WORD_ENABLE        = yes   # Double-tap Shift or QK_CAPS_WORD_TOGGLE; capitalizes until break character
 VIAL_ENABLE            = yes   # Vial protocol
 VIA_ENABLE             = yes   # VIA protocol (Vial dependency)
 VIALRGB_ENABLE         = yes   # Vial RGB mode/brightness controls
