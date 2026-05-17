@@ -1,5 +1,6 @@
 ﻿#include QMK_KEYBOARD_H
 #include "theme.h"
+#include <stdlib.h>  /* rand(), srand() — for boot animation style selection */
 
 /* ============================================================
  * DEBUG LOGGING
@@ -315,15 +316,74 @@ static uint8_t        reactive_write_pos = 0;
 
 /* ============================================================
  * BOOT ANIMATION
- * Left-to-right sweep using g_led_config.point[i].x (range 0-210).
- * 4 phases x 250 ms = 1000 ms total.
+ * Style selected randomly at boot via srand(timer_read32()) % 3:
+ *   0 = curtain sweep  left→right 4-phase wipe  (1000 ms)
+ *   1 = radial expand  bloom from keyboard center (1000 ms)
+ *   2 = split outward  expand from center gap     (1000 ms)
+ * All styles use g_led_config.point[i].x/y for LED positions.
  * ============================================================ */
-#define BOOT_SWEEP_PHASE_MS   250
-#define BOOT_LED_MAX_X        210
+#define BOOT_ANIM_TOTAL_MS    1000
+#define BOOT_ANIM_PHASE_MS    500   /* half-period for 2-phase styles */
 #define BOOT_ANIM_BRIGHTNESS  255
+#define BOOT_LED_MAX_X        210
+#define BOOT_LED_CENTER_X     105   /* midpoint of x range 0-210 */
+#define BOOT_LED_CENTER_Y     32    /* midpoint of y range 0-64  */
+#define BOOT_RADIAL_MAX_SQ    12050UL  /* (105²+32²): max dist² from center */
 
 static bool     boot_anim_active = false;
 static uint32_t boot_anim_timer  = 0;
+static uint8_t  boot_anim_style  = 0;
+
+/* Style 0: 4-phase left-to-right curtain sweep */
+static void boot_render_sweep(uint8_t led_min, uint8_t led_max, uint32_t elapsed) {
+    uint32_t phase_ms = BOOT_ANIM_TOTAL_MS / 4;
+    uint8_t  phase    = (uint8_t)(elapsed / phase_ms);
+    uint32_t phase_t  = elapsed - (uint32_t)phase * phase_ms;
+    uint8_t  sweep    = (uint8_t)((phase_t * BOOT_LED_MAX_X) / phase_ms);
+    for (uint8_t i = led_min; i < led_max; i++) {
+        uint8_t lx = g_led_config.point[i].x;
+        bool lit;
+        switch (phase) {
+            case 0:  lit = (lx <= sweep);                  break;
+            case 1:  lit = (lx >  sweep);                  break;
+            case 2:  lit = (lx >= BOOT_LED_MAX_X - sweep); break;
+            default: lit = (lx <  BOOT_LED_MAX_X - sweep); break;
+        }
+        apply_color(i, lit ? COLOR_WHITE : COLOR_OFF, BOOT_ANIM_BRIGHTNESS);
+    }
+}
+
+/* Style 1: radial bloom — expand out from center, then collapse back */
+static void boot_render_radial(uint8_t led_min, uint8_t led_max, uint32_t elapsed) {
+    bool     expand = (elapsed < BOOT_ANIM_PHASE_MS);
+    uint32_t t      = expand ? elapsed : (elapsed - BOOT_ANIM_PHASE_MS);
+    for (uint8_t i = led_min; i < led_max; i++) {
+        uint32_t dx = (uint32_t)(g_led_config.point[i].x > BOOT_LED_CENTER_X ?
+                       g_led_config.point[i].x - BOOT_LED_CENTER_X :
+                       BOOT_LED_CENTER_X - g_led_config.point[i].x);
+        uint32_t dy = (uint32_t)(g_led_config.point[i].y > BOOT_LED_CENTER_Y ?
+                       g_led_config.point[i].y - BOOT_LED_CENTER_Y :
+                       BOOT_LED_CENTER_Y - g_led_config.point[i].y);
+        uint32_t dist_sq   = dx * dx + dy * dy;
+        uint32_t thresh_ms = dist_sq * BOOT_ANIM_PHASE_MS / BOOT_RADIAL_MAX_SQ;
+        bool     lit       = expand ? (t >= thresh_ms) : (t < thresh_ms);
+        apply_color(i, lit ? COLOR_WHITE : COLOR_OFF, BOOT_ANIM_BRIGHTNESS);
+    }
+}
+
+/* Style 2: split outward — both halves expand away from center gap, then collapse */
+static void boot_render_split(uint8_t led_min, uint8_t led_max, uint32_t elapsed) {
+    bool     expand = (elapsed < BOOT_ANIM_PHASE_MS);
+    uint32_t t      = expand ? elapsed : (elapsed - BOOT_ANIM_PHASE_MS);
+    for (uint8_t i = led_min; i < led_max; i++) {
+        uint32_t dx        = (uint32_t)(g_led_config.point[i].x > BOOT_LED_CENTER_X ?
+                              g_led_config.point[i].x - BOOT_LED_CENTER_X :
+                              BOOT_LED_CENTER_X - g_led_config.point[i].x);
+        uint32_t thresh_ms = dx * BOOT_ANIM_PHASE_MS / BOOT_LED_CENTER_X;
+        bool     lit       = expand ? (t >= thresh_ms) : (t < thresh_ms);
+        apply_color(i, lit ? COLOR_WHITE : COLOR_OFF, BOOT_ANIM_BRIGHTNESS);
+    }
+}
 
 /* ============================================================
  * THEME TABLE  (indexed by ui_mode_t == RGB_MATRIX_CUSTOM offset)
@@ -626,6 +686,8 @@ void keyboard_post_init_user(void) {
 
     boot_anim_active = true;
     boot_anim_timer  = timer_read32();
+    srand(boot_anim_timer);                      /* seed from USB enum timing — varies each boot */
+    boot_anim_style  = (uint8_t)(rand() % 3);   /* pick animation style randomly */
 
     LOG(DEBUG_INFO, "M57 init: leds=%u mods=%u os=%u theme=%u",
         (uint8_t)M57_LED_COUNT, mod_led_count,
@@ -660,23 +722,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
  * base RGB effect. Runs boot animation first; in steady state only active
  * when the current mode is one of the three custom RGB modes. */
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    /* Boot animation: overrides everything for ~1 second */
+    /* Boot animation: overrides everything for BOOT_ANIM_TOTAL_MS */
     if (boot_anim_active) {
         uint32_t elapsed = timer_elapsed32(boot_anim_timer);
-        if (elapsed < (uint32_t)BOOT_SWEEP_PHASE_MS * 4) {
-            uint8_t  phase   = (uint8_t)(elapsed / BOOT_SWEEP_PHASE_MS);
-            uint32_t phase_t = elapsed - (uint32_t)phase * BOOT_SWEEP_PHASE_MS;
-            uint8_t  sweep   = (uint8_t)((phase_t * BOOT_LED_MAX_X) / BOOT_SWEEP_PHASE_MS);
-            for (uint8_t i = led_min; i < led_max; i++) {
-                uint8_t lx  = g_led_config.point[i].x;
-                bool    lit;
-                switch (phase) {
-                    case 0:  lit = (lx <= sweep);                  break;
-                    case 1:  lit = (lx >  sweep);                  break;
-                    case 2:  lit = (lx >= BOOT_LED_MAX_X - sweep); break;
-                    default: lit = (lx <  BOOT_LED_MAX_X - sweep); break;
-                }
-                apply_color(i, lit ? COLOR_WHITE : COLOR_OFF, BOOT_ANIM_BRIGHTNESS);
+        if (elapsed < BOOT_ANIM_TOTAL_MS) {
+            switch (boot_anim_style) {
+                case 1:  boot_render_radial(led_min, led_max, elapsed); break;
+                case 2:  boot_render_split(led_min, led_max, elapsed);  break;
+                default: boot_render_sweep(led_min, led_max, elapsed);  break;
             }
             return false;
         }
