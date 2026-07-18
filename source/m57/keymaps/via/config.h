@@ -13,3 +13,6 @@
 // avoid a held mod-tap getting consumed as a repeated tap when you've just
 // tapped the same key (e.g. double-tap 'a' won't accidentally hold gui).
 #define QUICK_TAP_TERM 0
+
+#define VIAL_UNLOCK_COMBO_ROWS { 0, 0 }
+#define VIAL_UNLOCK_COMBO_COLS { 0, 1 }
